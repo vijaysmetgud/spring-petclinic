@@ -18,19 +18,19 @@ stages{
 
     stage('git checkout'){
         steps{
-            sh echo This is git checkout stage
+            sh 'echo This is git checkout stage'
         }
     }
 
     stage('build and deploy'){
         steps{
-            sh echo This is second stage
+            sh 'echo This is second stage'
         }
     }
 
     stage('reporting'){
         steps{
-            sh echo This id reporting stage
+            sh 'echo This id reporting stage'
         }
     }
 }
