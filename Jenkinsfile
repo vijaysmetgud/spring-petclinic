@@ -1,29 +1,36 @@
 pipeline{
+
 agent { label 'jdk-17' }
+
 options{
-timeout(time:30, unit: 'MINUTES')
+    timeout(time:30, unit: 'MINUTES')
 }
+
 triggers{
-poolSCM('* * * * *')
+    poolSCM('* * * * *')
 }
+
 tools{
-jdk 'JDK-17'
+    jdk 'JDK-17'
 }
+
 stages{
-stage('git checkout'){
-steps{
-    sh echo This is git checkout stage
-}
-}
-stage('build and deploy'){
-steps{
-    sh echo This is Build & Deploy stage
-}
-}
-stage('reporting'){
-steps{
-    sh echo This id reporting stage
-}
-}
-}
+
+    stage('git checkout'){
+        steps{
+            sh echo This is git checkout stage
+        }
+    }
+
+    stage('build and deploy'){
+        steps{
+            sh echo This is second stage
+        }
+    }
+
+    stage('reporting'){
+        steps{
+            sh echo This id reporting stage
+        }
+    }
 }
