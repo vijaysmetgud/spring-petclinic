@@ -7,11 +7,11 @@ options{
 }
 
 triggers{
-    poolSCM('* * * * *')
+    pollSCM('* * * * *')
 }
 
 tools{
-    jdk 'JDK-17'
+    jdk 'jdk-17'
 }
 
 stages{
