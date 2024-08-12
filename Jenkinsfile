@@ -19,7 +19,7 @@ git branch: 'main', url:
 stage ('Artifactory configuration') {
 steps {
 rtMavenDeployer (
-id: "mainserver",
+id: "spc-maven",
 serverId: "jrog-jenkins-connection",
 releaseRepo: 'libs-release-local/',
 snapshotRepo: 'libs-snapshot-local/'
