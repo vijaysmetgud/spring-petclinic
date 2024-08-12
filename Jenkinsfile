@@ -1,37 +1,55 @@
 pipeline{
-
-agent { label 'jdk-17' }
-
+agent any
 options{
-    timeout(time:30, unit: 'MINUTES')
+timeout(time:30, unit: 'MINUTES')
 }
-
 triggers{
-    pollSCM('* * * * *')
+pollSCM('* * * * *')
 }
-
 tools{
-    jdk 'jdk-17'
+jdk 'jdk-17'
 }
-
 stages{
-
-    stage('git checkout'){
-        steps{
-            sh 'echo This is git checkout stage'
-        }
-    }
-
-    stage('build and deploy'){
-        steps{
-            sh 'echo This is second stage'
-        }
-    }
-
-    stage('reporting'){
-        steps{
-            sh 'echo This id reporting stage'
-        }
-    }
+stage('git checkout'){
+steps{
+git branch: 'main', url:
+'https://github.com/vijaysmetgud/spring-petclinic.git'
+}
+}
+stage ('Artifactory configuration') {
+steps {
+rtMavenDeployer (
+id: "mainserver",
+serverId: "jrog-jenkins-connection",
+releaseRepo: 'libs-release-local/',
+snapshotRepo: 'libs-snapshot-local/'
+)
+}
+}
+stage ('Exec Maven') {
+steps {
+rtMavenRun (
+tool: 'Maven 3.9.6', // Tool name from Jenkins
+configuration
+pom: 'pom.xml',
+goals: 'clean install',
+deployerId: "admin"
+// buildName: "${JOB_NAME}",
+// buildNumber: "${BUILD_ID}"
+)
+}
+}
+stage ('Publish build info') {
+steps {
+rtPublishBuildInfo (
+serverId: "jrog-jenkins-connection"
+)
+}
+}
+stage('Junit Results'){
+steps{
+junit testResults: '**/target/surefire-reports/TEST-*.xml'
+}
+}
 }
 }
