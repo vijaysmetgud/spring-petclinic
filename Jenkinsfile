@@ -29,9 +29,8 @@ snapshotRepo: 'libs-snapshot-local/'
 stage ('Exec Maven') {
 steps {
 rtMavenRun (
-tool: 'Maven 3.9.6', // Tool name from Jenkins
-configuration
-pom: 'pom.xml',
+tool: 'Maven 3.9.6', // Tool name from Jenkins configuration
+pom: ('pom.xml'),
 goals: 'clean install',
 deployerId: "admin"
 // buildName: "${JOB_NAME}",
