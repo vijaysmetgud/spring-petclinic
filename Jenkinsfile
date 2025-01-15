@@ -21,7 +21,7 @@ pipeline {
                 sh '''mvn clean verify sonar:sonar \
                     -Dsonar.projectKey=spc-key \
                     -Dsonar.host.url=https://172.31.38.7:9000 \
-                    -Dsonar.login=sqp_8eb3aa094b77804b212a143e9c9b9cd179685bd8'''
+                    -Dsonar.login=sqp_0d303fdc59469028d648406d5faa888a4f450616'''
             }
         }
     }
