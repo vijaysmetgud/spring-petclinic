@@ -20,7 +20,7 @@ pipeline {
             steps {
                 sh '''mvn clean verify sonar:sonar \
                     -Dsonar.projectKey=spc-key \
-                    -Dsonar.host.url=https://13.234.204.178:9000 \
+                    -Dsonar.host.url=https://172.31.45.50:9000 \
                     -Dsonar.login=sqp_0d303fdc59469028d648406d5faa888a4f450616'''
             }
         }
