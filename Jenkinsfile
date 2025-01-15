@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_SERVER = 'SonarQube'  // The name of the SonarQube server configured in Jenkins
+        // SONARQUBE_SERVER = 'SonarQube'  // The name of the SonarQube server configured in Jenkins
         ARTIFACTORY_SERVER = 'Artifactory'  // The name of the Artifactory server configured in Jenkins
         ARTIFACTORY_REPO = 'libs-release-local'  // Artifactory repository to upload artifacts
     }
