@@ -45,8 +45,8 @@ pipeline {
             steps {
                 script {
                     // Define Artifactory server and upload specification
-                    withCredentials([usernamePassword(credentialsId: 'artifactory-creds', passwordVariable: 'ARTIFACTORY_PASSWORD', usernameVariable: 'ARTIFACTORY_USER')]) {
-                        def server = Artifactory.server(ARTIFACTORY_SERVER)
+                    withCredentials([usernamePassword(credentialsId: 'artifactory-creds', passwordVariable: 'myjfrog@123', usernameVariable: 'myjfrog@123')]) {
+                        def server = Artifactory.server(Artifactory)
                         def uploadSpec = """{
                             "files": [
                                 {
