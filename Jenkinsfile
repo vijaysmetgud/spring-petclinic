@@ -13,6 +13,14 @@ pipeline{
                 sh 'mvn clean package'
             }
         }
+        stage('SonarQube analysis') {
+            steps {
+               mvn clean verify sonar:sonar \
+              -Dsonar.projectKey=spc-key \
+              -Dsonar.host.url=http://13.233.223.177:9000 \
+              -Dsonar.login=sqp_8eb3aa094b77804b212a143e9c9b9cd179685bd8
+            }
+        }  
         // stage('SonarQube analysis') {
         //     steps {
         //   //  def scannerHome = tool 'SonarQubeScanner 6.0.0.4432';
