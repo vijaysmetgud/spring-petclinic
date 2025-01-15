@@ -18,11 +18,11 @@ pipeline {
 
         stage('SonarQube analysis') {
             steps {
-                // Run SonarQube analysis using the Maven command
                 sh '''mvn clean verify sonar:sonar \
                     -Dsonar.projectKey=spc-key \
                     -Dsonar.host.url=https://65.2.152.26:9000 \
-                    -Dsonar.login=sqp_8eb3aa094b77804b212a143e9c9b9cd179685bd8'''
+                    -Dsonar.login=sqp_8eb3aa094b77804b212a143e9c9b9cd179685bd8 \
+                    -Dsonar.ssl.verificationMode=none'''
             }
         }
     }
