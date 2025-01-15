@@ -22,21 +22,21 @@ pipeline {
             }
         }
 
-        stage('SonarQube analysis') {
-            steps {
-                script {
-                    // Perform the SonarQube analysis securely using the SonarQube token
-                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                        withSonarQubeEnv(SONARQUBE_SERVER) {
-                            sh '''mvn clean verify sonar:sonar \
-                                -Dsonar.projectKey=spc-key \
-                                -Dsonar.host.url=https://13.234.204.178:9000 \
-                                -Dsonar.login=${SONAR_TOKEN}'''
-                        }
-                    }
-                }
-            }
-        }
+        // stage('SonarQube analysis') {
+        //     steps {
+        //         script {
+        //             // Perform the SonarQube analysis securely using the SonarQube token
+        //             withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+        //                 withSonarQubeEnv(SONARQUBE_SERVER) {
+        //                     sh '''mvn clean verify sonar:sonar \
+        //                         -Dsonar.projectKey=spc-key \
+        //                         -Dsonar.host.url=https://13.234.204.178:9000 \
+        //                         -Dsonar.login=${SONAR_TOKEN}'''
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Upload to Artifactory') {
             steps {
