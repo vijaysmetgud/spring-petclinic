@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        SONARQUBE_SERVER = 'SonarQube'  // The name of the SonarQube server configured in Jenkins
+        ARTIFACTORY_SERVER = 'Artifactory'  // The name of the Artifactory server configured in Jenkins
+        ARTIFACTORY_REPO = 'libs-release-local'  // Artifactory repository to upload artifacts
+    }
+
     stages {
         stage('SCM') {
             steps {
@@ -18,11 +24,49 @@ pipeline {
 
         stage('SonarQube analysis') {
             steps {
-                sh '''mvn clean verify sonar:sonar \
-                    -Dsonar.projectKey=spc-key \
-                    -Dsonar.host.url=https://13.234.122.98:9000 \
-                    -Dsonar.login=sqp_0d303fdc59469028d648406d5faa888a4f450616'''
+                script {
+                    // Perform the SonarQube analysis securely using the SonarQube token
+                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                        withSonarQubeEnv(SONARQUBE_SERVER) {
+                            sh '''mvn clean verify sonar:sonar \
+                                -Dsonar.projectKey=spc-key \
+                                -Dsonar.host.url=https://13.234.204.178:9000 \
+                                -Dsonar.login=${SONAR_TOKEN}'''
+                        }
+                    }
+                }
             }
+        }
+
+        stage('Upload to Artifactory') {
+            steps {
+                script {
+                    // Define Artifactory server and upload specification
+                    withCredentials([usernamePassword(credentialsId: 'artifactory-creds', passwordVariable: 'ARTIFACTORY_PASSWORD', usernameVariable: 'ARTIFACTORY_USER')]) {
+                        def server = Artifactory.server(ARTIFACTORY_SERVER)
+                        def uploadSpec = """{
+                            "files": [
+                                {
+                                    "pattern": "target/*.jar",  // The artifact files to upload
+                                    "target": "${ARTIFACTORY_REPO}/com/example/spring-petclinic/"
+                                }
+                            ]
+                        }"""
+
+                        // Upload the artifacts to Artifactory
+                        server.upload(uploadSpec)
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
