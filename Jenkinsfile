@@ -5,6 +5,9 @@ pipeline {
         // SONARQUBE_SERVER = 'SonarQube'  // The name of the SonarQube server configured in Jenkins
         ARTIFACTORY_SERVER = 'Artifactory'  // The name of the Artifactory server configured in Jenkins
         ARTIFACTORY_REPO = 'libs-release-local'  // Artifactory repository to upload artifacts
+        ARTIFACTORY_PASSWORD = 'myjfrog@123'
+        ARTIFACTORY_USER = 'myjfrog@123'
+        
     }
 
     stages {
