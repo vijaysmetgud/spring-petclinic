@@ -2,74 +2,97 @@ pipeline {
     agent any
 
     environment {
-        // SONARQUBE_SERVER = 'SonarQube'  // The name of the SonarQube server configured in Jenkins
-        ARTIFACTORY_SERVER = 'Artifactory'  // The name of the Artifactory server configured in Jenkins
-        ARTIFACTORY_REPO = 'libs-release-local'  // Artifactory repository to upload artifacts
-        ARTIFACTORY_PASSWORD = 'myjfrog@123'
-        ARTIFACTORY_USER = 'myjfrog@123'
-        
+        // Define environment variables
+        DOCKER_IMAGE = "your-docker-image-name"  // Replace with your desired Docker image name
+        SONARQUBE_URL = "http://your-sonarqube-server"  // Replace with your SonarQube server URL
+        SONARQUBE_TOKEN = credentials('sonarqube-token')  // Assuming you've stored the SonarQube token as a Jenkins secret
+        DOCKER_REGISTRY = "your-docker-registry"  // Docker registry URL (e.g., Docker Hub, AWS ECR, etc.)
+        DOCKER_REGISTRY_CREDENTIALS = credentials('docker-registry-credentials')  // Credentials for Docker registry
     }
 
     stages {
-        stage('SCM') {
-            steps {
-                // Pull the code from the repository
-                git branch: 'main', url: 'https://github.com/vijaysmetgud/spring-petclinic.git'
-            }
-        }
-
-        stage('BUILD') {
-            steps {
-                // Build the project using Maven
-                sh 'mvn clean package'
-            }
-        }
-
-        // stage('SonarQube analysis') {
-        //     steps {
-        //         script {
-        //             // Perform the SonarQube analysis securely using the SonarQube token
-        //             withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-        //                 withSonarQubeEnv(SONARQUBE_SERVER) {
-        //                     sh '''mvn clean verify sonar:sonar \
-        //                         -Dsonar.projectKey=spc-key \
-        //                         -Dsonar.host.url=https://13.234.204.178:9000 \
-        //                         -Dsonar.login=${SONAR_TOKEN}'''
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        stage('Upload to Artifactory') {
+        // Clone the repository (optional if you don't already have the code)
+        stage('Clone') {
             steps {
                 script {
-                    // Define Artifactory server and upload specification
-                    withCredentials([usernamePassword(credentialsId: 'artifactory-creds', passwordVariable: 'myjfrog@123', usernameVariable: 'myjfrog@123')]) {
-                        def server = Artifactory.server(Artifactory)
-                        def uploadSpec = """{
-                            "files": [
-                                {
-                                    "pattern": "target/*.jar",  // The artifact files to upload
-                                    "target": "${ARTIFACTORY_REPO}/com/example/spring-petclinic/"
-                                }
-                            ]
-                        }"""
+                    echo "Cloning the repository"
+                    // Clone the repository (assuming it's configured in your Jenkins job or manually specify the URL)
+                    git 'https://github.com/vijaysmetgud/spring-petclinic.git'  // Replace with your repo URL
+                }
+            }
+        }
 
-                        // Upload the artifacts to Artifactory
-                        server.upload(uploadSpec)
+        // Build stage
+        stage('Build') {
+            steps {
+                script {
+                    echo "Building the application"
+                    // Clean and build the Spring Boot project with Maven
+                    sh 'mvn clean install -DskipTests'
+                }
+            }
+        }
+
+        // Test stage
+        stage('Test') {
+            steps {
+                script {
+                    echo "Running tests"
+                    // Run tests using Maven
+                    sh 'mvn test'
+                }
+            }
+        }
+
+        // SonarQube analysis stage
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    echo "Running SonarQube analysis"
+                    // Perform SonarQube analysis
+                    withSonarQubeEnv('SonarQube') {  // Ensure 'SonarQube' is configured in Jenkins
+                        sh 'mvn sonar:sonar -Dsonar.projectKey=spring-petclinic -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=${SONARQUBE_TOKEN}'
                     }
+                }
+            }
+        }
+
+        // Dockerize the application using Kaniko
+        stage('Dockerize with Kaniko') {
+            steps {
+                script {
+                    echo "Dockerizing the application using Kaniko"
+                    // Run Kaniko to build the Docker image
+                    sh '''
+                    /kaniko/executor --context $WORKSPACE --dockerfile $WORKSPACE/Dockerfile --destination $DOCKER_REGISTRY/$DOCKER_IMAGE:latest
+                    '''
+                }
+            }
+        }
+
+        // Trivy scanning stage
+        stage('Trivy Scan') {
+            steps {
+                script {
+                    echo "Running Trivy scan for vulnerabilities"
+                    // Run Trivy to scan the Docker image for vulnerabilities
+                    sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL $DOCKER_REGISTRY/$DOCKER_IMAGE:latest'
                 }
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline executed successfully!'
+        always {
+            cleanWs()  // Clean workspace after the build
         }
+
+        success {
+            echo "Pipeline completed successfully"
+        }
+
         failure {
-            echo 'Pipeline failed.'
+            echo "Pipeline failed"
         }
     }
 }
