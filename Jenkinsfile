@@ -3,10 +3,10 @@ pipeline {
 
     environment {
         // Define environment variables
-        DOCKER_IMAGE = "your-docker-image-name"  // Replace with your desired Docker image name
+        DOCKER_IMAGE = "vsmetgud/springpetgitlab"  // Replace with your desired Docker image name
         SONARQUBE_URL = "http://your-sonarqube-server"  // Replace with your SonarQube server URL
         SONARQUBE_TOKEN = credentials('sonarqube-token')  // Assuming you've stored the SonarQube token as a Jenkins secret
-        DOCKER_REGISTRY = "your-docker-registry"  // Docker registry URL (e.g., Docker Hub, AWS ECR, etc.)
+        DOCKER_REGISTRY = "docker.io"  // Docker registry URL (e.g., Docker Hub, AWS ECR, etc.)
         DOCKER_REGISTRY_CREDENTIALS = credentials('docker-registry-credentials')  // Credentials for Docker registry
     }
 
