@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-deploy:
-    if: github.ref == 'refs/heads/development'  # ✅ Block job if not development branch
+    if: github.ref == 'refs/heads/main'  # ✅ Block job if not main branch
     runs-on: ubuntu-latest
 
     steps:
