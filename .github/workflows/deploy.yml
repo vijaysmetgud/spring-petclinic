@@ -3,11 +3,12 @@ name: Build and Deploy Spring PetClinic
 on:
   push:
     branches:
-      - development  # ✅ Only auto-trigger on development
-  workflow_dispatch:   # ✅ Allow manual trigger from Actions tab on any branch
+      - development  # ✅ Auto-trigger only on push to development
+  workflow_dispatch:    # ✅ Allow manual trigger — we'll filter inside
 
 jobs:
   build-and-deploy:
+    if: github.ref == 'refs/heads/development'  # ✅ Block job if not development branch
     runs-on: ubuntu-latest
 
     steps:
