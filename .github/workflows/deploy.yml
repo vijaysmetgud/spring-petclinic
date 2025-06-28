@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-deploy:
-    if: github.ref == 'refs/heads/development'  # ✅ Only run if triggered on 'development'
+    #if: github.ref == 'refs/heads/development'  # ✅ Only run if triggered on 'development'
     runs-on: ubuntu-latest
 
     steps:
@@ -65,5 +65,5 @@ jobs:
             sudo docker rm petclinic || true
 
             echo "🚀 Running new container..."
-            sudo docker run -d --name petclinic -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/spring-petclinic:latest
+            sudo docker run -d --name petclinic -p 8085:8080 ${{ secrets.DOCKER_USERNAME }}/spring-petclinic:latest
           EOF
