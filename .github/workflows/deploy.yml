@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - development  # ✅ Auto-trigger only on push to development
-  workflow_dispatch:    # ✅ Allow manual trigger — we'll filter inside
+  workflow_dispatch:    # ✅ Allow manual trigger on any branch
 
 jobs:
   build-and-deploy:
-    if: github.ref == 'refs/heads/main'  # ✅ Block job if not main branch
+    if: github.ref == 'refs/heads/main'  # ✅ Run only for development
     runs-on: ubuntu-latest
 
     steps:
@@ -44,24 +44,21 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy to EC2
-          run: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-              # Install Docker if not present
-              if ! command -v docker &> /dev/null; then
-                echo "🔧 Installing Docker..."
-                sudo apt update
-                sudo apt install -y docker.io
-                sudo systemctl enable docker
-                sudo systemctl start docker
-                sudo usermod -aG docker $USER
-                newgrp docker
-              fi
-        
-              # Deploy container
-              docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-              docker pull ${{ secrets.DOCKER_USERNAME }}/spring-petclinic:latest
-              docker stop petclinic || true
-              docker rm petclinic || true
-              docker run -d --name petclinic -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/spring-petclinic:latest
-            EOF
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            # Install Docker if not present
+            if ! command -v docker &> /dev/null; then
+              echo "🔧 Installing Docker..."
+              sudo apt update
+              sudo apt install -y docker.io
+              sudo systemctl enable docker
+              sudo systemctl start docker
+            fi
 
+            # Deploy container
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull ${{ secrets.DOCKER_USERNAME }}/spring-petclinic:latest
+            docker stop petclinic || true
+            docker rm petclinic || true
+            docker run -d --name petclinic -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/spring-petclinic:latest
+          EOF
