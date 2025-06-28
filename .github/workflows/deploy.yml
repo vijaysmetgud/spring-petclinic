@@ -4,11 +4,12 @@ on:
   push:
     branches:
       - development  # ✅ Auto-trigger only on push to development
+      - main
   workflow_dispatch:    # ✅ Allow manual trigger on any branch
 
 jobs:
   build-and-deploy:
-    if: github.ref == 'refs/heads/development'  # ✅ Run only for development
+    if: github.ref == 'refs/heads/main'  # ✅ Run only for main
     runs-on: ubuntu-latest
 
     steps:
