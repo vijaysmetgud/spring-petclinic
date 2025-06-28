@@ -3,7 +3,7 @@ name: Build and Deploy Spring PetClinic
 on:
   push:
     branches:
-      - development  # ✅ Auto-trigger only on push to development
+      #- development  # ✅ Auto-trigger only on push to development
       #- main
   workflow_dispatch:    # ✅ Allow manual trigger on any branch
 
