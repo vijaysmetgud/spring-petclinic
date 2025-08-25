@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: petclinic
-          image: docker.io/springcommunity/spring-petclinic-rest
+          image: springcommunity/spring-petclinic-rest
           ports:
             - containerPort: 8080
