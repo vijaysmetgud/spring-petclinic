@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/yourname/petclinic-argo
+    repoURL: https://github.com/vijaysmetgud/petclinic-argo
     targetRevision: HEAD
     path: .
   destination:
